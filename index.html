@@ -1,0 +1,2281 @@
+<!-- Este é um comentário de uma linha -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - Docking Molecular</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #151b2e;
+            --bg-tertiary: #1e2738;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7c3aed;
+            --text-primary: #e8edf4;
+            --text-secondary: #9ca7ba;
+            --text-tertiary: #5d6a7e;
+            --border-color: #2a3447;
+            --hover-bg: #252f45;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        body {
+            font-family: 'Bitter', serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(0, 217, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(124, 58, 237, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 340px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+        }
+
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        .sidebar-header {
+            padding: 0 2rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nav-section {
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            padding: 0 2rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            padding: 0.75rem 2rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--hover-bg);
+            color: var(--text-primary);
+            border-left-color: var(--accent-primary);
+        }
+
+        .nav-item.active {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-left-color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .nav-item.active::before {
+            content: '▸';
+            position: absolute;
+            left: 1rem;
+            color: var(--accent-primary);
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 340px;
+            flex: 1;
+            padding: 3rem 4rem;
+            max-width: 1000px;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-heading {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-subheading {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+            color: var(--accent-primary);
+        }
+
+        .content-text {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            font-size: 1.05rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 217, 255, 0.1);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: var(--bg-primary);
+            min-width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        /* Lists */
+        .custom-list {
+            margin: 1rem 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .custom-list li {
+            padding: 0.5rem 0 0.5rem 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .custom-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0.5rem;
+            color: var(--accent-primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .code-block::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .code-block::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+
+        .code-block::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+
+        /* Comment in code */
+        .code-comment {
+            color: var(--text-tertiary);
+        }
+
+        /* Info Box */
+        .info-box {
+            background: rgba(0, 217, 255, 0.05);
+            border-left: 3px solid var(--accent-primary);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.05);
+            border-left-color: var(--warning-color);
+        }
+
+        .info-box.success {
+            background: rgba(16, 185, 129, 0.05);
+            border-left-color: var(--success-color);
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box.warning .info-box-title {
+            color: var(--warning-color);
+        }
+
+        .info-box.success .info-box-title {
+            color: var(--success-color);
+        }
+
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .comparison-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .comparison-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-4px);
+        }
+
+        .comparison-card h3 {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .comparison-card p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
+
+        /* Media Container */
+        .media-container {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .media-container img,
+        .media-container video {
+            width: 100%;
+            display: block;
+        }
+
+        .media-caption {
+            background: var(--bg-tertiary);
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        /* Table */
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .custom-table thead {
+            background: var(--bg-tertiary);
+        }
+
+        .custom-table th {
+            padding: 1rem;
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--accent-primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .custom-table td {
+            padding: 1rem;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .custom-table tr:hover {
+            background: var(--hover-bg);
+        }
+
+        /* Steps Navigation */
+        .substeps {
+            margin-left: 2rem;
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .substep-item {
+            padding: 0.75rem 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .substep-number {
+            color: var(--accent-primary);
+            font-weight: 600;
+            margin-right: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Link */
+        .custom-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            border-bottom: 1px dashed var(--accent-primary);
+            transition: all 0.2s ease;
+        }
+
+        .custom-link:hover {
+            color: var(--accent-secondary);
+            border-bottom-color: var(--accent-secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 2rem 1.5rem;
+            }
+
+            .section-heading {
+                font-size: 1.5rem;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-tertiary);
+            font-size: 0.9rem;
+        }
+
+        .authors {
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <!-- Ferramentas de Docking -->
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <div class="nav-item active" data-section="ferramentas">Ferramentas de docking</div>
+            </div>
+
+            <!-- AutoDock Vina -->
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <div class="nav-item" data-section="vina-etapa1">Preparação da pasta</div>
+                <div class="nav-item" data-section="vina-etapa2">Preparo do receptor</div>
+                <div class="nav-item" data-section="vina-etapa3">Grid box</div>
+                <div class="nav-item" data-section="vina-etapa4">Preparo do ligante</div>
+                <div class="nav-item" data-section="vina-etapa5">Execução do Docking</div>
+                <div class="nav-item" data-section="vina-multiplos">Múltiplos Ligantes</div>
+            </div>
+
+            <!-- AutoDock 4 -->
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <div class="nav-item" data-section="ad4-etapa1">Preparação da pasta</div>
+                <div class="nav-item" data-section="ad4-etapa2">Preparo do receptor</div>
+                <div class="nav-item" data-section="ad4-etapa3">Grid box</div>
+                <div class="nav-item" data-section="ad4-etapa4">Criar DPF</div>
+                <div class="nav-item" data-section="ad4-etapa5">Preparação com Raccoon</div>
+                <div class="nav-item" data-section="ad4-etapa6">Análise dos resultados</div>
+                <div class="nav-item" data-section="ad4-etapa7">Múltiplos Ligantes</div>
+            </div>
+
+            <!-- AutoDock CrankPep -->
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <div class="nav-item" data-section="adcp-instalacao">Instalação</div>
+                <div class="nav-item" data-section="adcp-redocking">Redocking</div>
+                <div class="nav-item" data-section="adcp-docking">Docking</div>
+            </div>
+
+            <!-- Redocking -->
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <div class="nav-item" data-section="redocking">Redocking (Vina/AD4)</div>
+            </div>
+
+            <!-- Materiais e Autores -->
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <div class="nav-item" data-section="materiais">Materiais utilizados</div>
+                <div class="nav-item" data-section="autores">Autores</div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="content">
+            
+            <!-- ===================FERRAMENTAS DE DOCKING ==================== -->
+            <section id="ferramentas" class="content-section active">
+                <h2 class="section-heading">Ferramentas de docking</h2>
+
+                <h3 class="section-subheading">Qual ferramenta devo usar?</h3>
+                <p class="content-text">
+                    Escolha a ferramenta adequada para seu estudo de docking molecular baseado no tipo de ligante e requisitos específicos do seu projeto.
+                </p>
+
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>AutoDock Vina</h3>
+                        <p>Ideal para ligantes pequenos e médios. Rápido, preciso e amplamente utilizado. Melhor escolha para estudos gerais de docking molecular.</p>
+                        <p style="margin-top: 1rem; font-weight: 600; color: var(--text-primary);">Características:</p>
+                        <ul class="custom-list" style="margin-top: 0.5rem;">
+                            <li>Não lida bem com flexibilidade do receptor</li>
+                            <li>Não suporta docking de peptídeos</li>
+                            <li>Parâmetros de força fixos</li>
+                            <li>Dependência da Caixa de Encaixe</li>
+                            <li>Flexibilidade Limitada do Receptor</li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>AutoDock 4</h3>
+                        <p>O AutoDock 4 é a versão clássica que utiliza algoritmo genético Lamarckiano (LGA) para busca conformacional. É mais lento que o Vina, mas oferece maior controle sobre os parâmetros.</p>
+                        <p style="margin-top: 1rem; font-weight: 600; color: var(--text-primary);">Características:</p>
+                        <ul class="custom-list" style="margin-top: 0.5rem;">
+                            <li>Controle detalhado dos parâmetros</li>
+                            <li>Mapas de energia pré-calculados</li>
+                            <li>Bem estabelecido na literatura</li>
+                            <li>Mais lento que o Vina</li>
+                            <li>Configuração mais complexa</li>
+                            <li>Requer geração de grid maps</li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>AutoDock CrankPep</h3>
+                        <p>Especializado em docking de peptídeos. Considera a flexibilidade da cadeia principal, essencial para modelagem de peptídeos.</p>
+                        <p style="margin-top: 1rem; font-weight: 600; color: var(--text-primary);">Características:</p>
+                        <ul class="custom-list" style="margin-top: 0.5rem;">
+                            <li>Considera flexibilidade de backbone</li>
+                            <li>Algoritmo específico para peptídeos</li>
+                            <li>Baseado no AutoDock 4</li>
+                            <li>Maior custo computacional</li>
+                            <li>Ideal quando flexibilidade de backbone é crítica</li>
+                            <li>Docking com peptídeos de 20 aminoácidos de comprimento</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box success">
+                    <div class="info-box-title">💡 Recomendação</div>
+                    <p>Para a maioria dos projetos, comece com AutoDock Vina. É a ferramenta mais moderna, rápida e com melhor custo-benefício entre precisão e tempo computacional.</p>
+                </div>
+            </section>
+
+            <!-- ==================== AUTODOCK VINA - ETAPA 1 ==================== -->
+            <section id="vina-etapa1" class="content-section">
+                <h2 class="section-heading">Primeira etapa: Preparação da pasta de trabalho</h2>
+
+                <p class="content-text">
+                    No seu computador crie uma pasta de trabalho contendo os arquivos <code>receptor.pdb</code>, <code>ligante.pdb</code>, <code>vina_1.2.7</code> e <code>vina_split_1.2.7</code>.
+                </p>
+
+                <div class="info-box">
+                    <div class="info-box-title">📁 Nome da pasta</div>
+                    <p>Aqui o nome da pasta será <strong>Dock_Vina</strong></p>
+                </div>
+
+                <!-- VÍDEO: Adicione seu vídeo aqui -->
+                <div class="media-container">
+                    <video controls>
+                        <source src="assets/videos/vina/etapa1_preparacao.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeo HTML5.
+                    </video>
+                    <div class="media-caption">Vídeo: Preparação da pasta de trabalho</div>
+                </div>
+            </section>
+
+            <!-- ==================== AUTODOCK VINA - ETAPA 2 ==================== -->
+            <section id="vina-etapa2" class="content-section">
+                <h2 class="section-heading">Segunda etapa: Preparo do receptor</h2>
+
+                <p class="content-text">
+                    Abra o AutoDockTools-1.5.7, adicione o receptor, remova a água, remova o ligante complexado do PDB baixado, remova ligantes indesejados, adicione hidrogênios polares e salve o receptor em .pdbqt
+                </p>
+
+                <!-- VÍDEO: Visão geral -->
+                <div class="media-container">
+                    <video controls>
+                        <source src="assets/videos/vina/etapa2_receptor_geral.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeo HTML5.
+                    </video>
+                    <div class="media-caption">Vídeo: Visão geral do preparo do receptor</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Remover água
+                    </div>
+                    <div class="code-block">
+File → Read Molecule<br>
+Em seguida: Edit → Delete Water
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_remover_agua.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Remoção de água</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Remover ligante complexado
+                    </div>
+                    <p class="content-text">Na barra de tarefas: <code>Select → Select From String</code></p>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">→</span>
+                            Residue Sets → selecione Ligand → clique em Add → clique em Dismiss
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">→</span>
+                            Isso seleciona o ligante a ser removido
+                        </div>
+                    </div>
+                    <p class="content-text" style="margin-top: 1rem;">Na barra de tarefas siga: <code>Edit → Delete → Delete Selected Atoms → Continue</code></p>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_remover_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Remoção do ligante complexado</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Nota</div>
+                        <p>Deletar átomos do ligante selecionado</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Adicionar Hidrogênios Polares
+                    </div>
+                    <div class="code-block">
+Edit → Hidrogens → Add → Polar Only → OK
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_hidrogenios.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Adição de hidrogênios polares</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">ℹ️ Importante</div>
+                        <p>Vina utiliza uma função de pontuação de átomos unidos. Assim como no AutoDock, os hidrogênios polares são necessários nas estruturas de entrada para classificar corretamente os átomos pesados como doadores de ligações de hidrogênio (Manual - AutoDock Vina, acesso 17/01/2026).</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Salvar receptor em .pdbqt
+                    </div>
+                    <div class="code-block">
+Grid → Macromolecule → Choose → selecione seu receptor → Select Molecule → OK → salvar receptor como 6WX4.pdbqt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Dock_Vina</strong></p>
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_salvar_receptor.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Salvando o receptor em formato .pdbqt</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AUTODOCK VINA - ETAPA 3 ==================== -->
+            <section id="vina-etapa3" class="content-section">
+                <h2 class="section-heading">Terceira etapa: Grid box</h2>
+
+                <div class="info-box">
+                    <div class="info-box-title">📦 O que é Grid Box?</div>
+                    <p>Grid Box é uma caixa tridimensional (3D) definida sobre a proteína que delimita o espaço de busca do docking.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Selecione os resíduos que compõem o sítio
+                    </div>
+                    <p class="content-text">
+                        Na barra lateral à esquerda (guia Dashboard) clique no mais (+) ao lado do receptor para exibir os resíduos que constituem seu receptor.
+                    </p>
+                    <p class="content-text">
+                        Posteriormente selecione os resíduos que constituem seu sítio de ligação, clicando no círculo à direita (select/deselect (S)).
+                    </p>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa3_selecionar_residuos.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Seleção dos resíduos do sítio ativo</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">🔢 Resíduos utilizados</div>
+                        <p>106, 109, 110, 111, 162, 163, 164, 247, 248, 264, 268, 271, 272, 286</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Determinar tamanho da caixa e o centro da caixa
+                    </div>
+                    <p class="content-text">
+                        Determine o tamanho da caixa e o centro da caixa com base nos resíduos selecionados e guarde as informações em um arquivo <code>conf.txt</code>
+                    </p>
+                    <div class="code-block">
+Grid → Grid Box
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Dica</div>
+                        <p>Em <code>View → Show box as lines</code> facilita a exibição da caixa</p>
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa3_grid_box.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Definindo o Grid Box</div>
+                    </div>
+
+                    <p class="content-text" style="margin-top: 2rem;">
+                        No arquivo <code>conf.txt</code> deve conter exatamente o nome do ligante, receptor, os parâmetros do Grid Box e exhaustiveness.
+                    </p>
+
+                    <div class="code-block">
+receptor = 6WX4.pdbqt<br>
+ligand = geranyl_isobutanoate.pdbqt<br>
+<br>
+out = res_out.pdbqt<br>
+<br>
+center_x  = 11.938<br>
+center_y  = -25.901<br>
+center_z  = -37.072<br>
+<br>
+size_x  = 56<br>
+size_y  = 72<br>
+size_z = 70<br>
+<br>
+exhaustiveness  = 8
+                    </div>
+
+                    <div class="info-box warning">
+                        <div class="info-box-title">⚙️ Exhaustiveness</div>
+                        <p>Quanto maior o exhaustiveness, mais tempo o Vina gasta explorando diferentes posições, orientações e conformações do ligante no Grid Box.</p>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Dock_Vina</strong></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AUTODOCK VINA - ETAPA 4 ==================== -->
+            <section id="vina-etapa4" class="content-section">
+                <h2 class="section-heading">Quarta etapa: Preparo do ligante</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Converter ligante para .pdb
+                    </div>
+                    <p class="content-text">
+                        Na guia Dashboard oculte o receptor clicando no círculo à direita (display/undisplay (L)).
+                    </p>
+                    <p class="content-text">No PyMol:</p>
+                    <div class="code-block">
+File → Open → selecione o arquivo .sdf → Abrir<br>
+File → Export Structure → Export Molecule → geranyl_isobutanoate.pdb → Salvar
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Atenção</div>
+                        <p>Antes de salvar mude o tipo de arquivo para .pdb</p>
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_converter_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Conversão do ligante para .pdb</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Adicionar Hidrogênios Polares
+                    </div>
+                    <p class="content-text">No AutoDockTools:</p>
+                    <div class="code-block">
+Ligand → Input → Open → geranyl_isobutanoate.pdb → Open<br>
+Edit → Hidrogens → Add → Polar Only → OK
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_hidrogenios_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Adição de hidrogênios polares ao ligante</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Salvar ligante em .pdbqt
+                    </div>
+                    <div class="code-block">
+Ligand → Output → Save as PDBQT → salvar ligante como geranyl_isobutanoate.pdbqt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Dock_Vina</strong></p>
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_salvar_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Salvando o ligante em .pdbqt</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AUTODOCK VINA - ETAPA 5 ==================== -->
+            <section id="vina-etapa5" class="content-section">
+                <h2 class="section-heading">Quinta etapa: Execução do Docking</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Windows
+                    </div>
+                    <p class="content-text">Execute o comando:</p>
+                    <div class="code-block">
+vina_1.2.7_win.exe  --config conf.txt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📄 Resultado</div>
+                        <p>O comando irá gerar o arquivo <code>res_out.pdbqt</code> contendo todas as conformações e suas respectivas energias.</p>
+                    </div>
+
+                    <p class="content-text" style="margin-top: 1.5rem;">Para separar cada conformação em um arquivo use o comando:</p>
+                    <div class="code-block">
+vina_split_1.2.7_win.exe --input res_out.pdbqt
+                    </div>
+
+                    <!-- VÍDEO -->
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa5_execucao_windows.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Execução do docking no Windows</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Linux
+                    </div>
+                    <p class="content-text">Execute os comandos:</p>
+                    <div class="code-block">
+chmod +x ./vina_1.2.7_linux_x86_64<br>
+./vina_1.2.7_linux_x86_64 --config conf.txt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📄 Resultado</div>
+                        <p>O comando irá gerar o arquivo <code>res_out.pdbqt</code> contendo todas as conformações e suas respectivas energias.</p>
+                    </div>
+
+                    <p class="content-text" style="margin-top: 1.5rem;">Para separar cada conformação em um arquivo use os comandos:</p>
+                    <div class="code-block">
+chmod +x ./vina_split_1.2.7_linux_x86_64<br>
+./vina_split_1.2.7_linux_x86_64 --input res_out.pdbqt
+                    </div>
+                </div>
+            </section>
+
+<!-- ==================== AUTODOCK VINA - MÚLTIPLOS LIGANTES ==================== -->
+<section id="vina-multiplos" class="content-section">
+    <h2 class="section-heading">Múltiplos Ligantes</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Primeira etapa: Preparação da pasta de trabalho
+        </div>
+        <p class="content-text">Crie uma pasta de trabalho contendo:</p>
+        <ul class="custom-list">
+            <li>receptor.pdb</li>
+            <li>pasta <strong>ligantes</strong> contendo ligantes a serem convertidos</li>
+            <li>pasta <strong>resultados</strong></li>
+            <li>pasta <strong>ligantes_conv</strong> para salvar os ligantes convertidos</li>
+            <li>arquivo conf.txt sem <code>ligand</code> e <code>out</code></li>
+            <li>vina_1.2.7, vina_split_1.2.7 e script multiplo_lig.py</li>
+        </ul>
+        <div class="info-box">
+            <div class="info-box-title">📁 Nome da pasta</div>
+            <p>Aqui o nome da pasta será <strong>Mult_lig</strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Segunda etapa: Preparo do receptor
+        </div>
+        <p class="content-text">
+            Processo idêntico ao preparo do receptor para docking único no AutoDock Vina.
+        </p>
+        <div class="code-block">
+1. File → Read Molecule<br>
+2. Edit → Delete Water<br>
+3. Select → Select From String → Residue Sets → Ligand → Add → Dismiss<br>
+4. Edit → Delete → Delete Selected Atoms → Continue<br>
+5. Edit → Hidrogens → Add → Polar Only → OK<br>
+6. Grid → Macromolecule → Choose → Select Molecule → OK → salvar como 6WX4.pdbqt
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📁 Localização</div>
+            <p>Salve na pasta <strong>Mult_lig</strong></p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/vina/multiplos_receptor.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Preparo do receptor para múltiplos ligantes</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Terceira etapa: Grid box
+        </div>
+        <p class="content-text">
+            Processo idêntico à definição do Grid Box para docking único.
+        </p>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                Selecione os resíduos que compõem o sítio
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                Determine tamanho da caixa e centro da caixa
+            </div>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/vina/multiplos_gridbox.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Definição do Grid Box para múltiplos ligantes</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Quarta etapa: Arquivo conf.txt
+        </div>
+        <p class="content-text">Remova as linhas <code>ligand</code> e <code>out</code>:</p>
+        <div class="code-block">
+receptor = 6WX4.pdbqt<br>
+<br>
+center_x  = 11.938<br>
+center_y  = -25.901<br>
+center_z  = -37.072<br>
+<br>
+size_x  = 56<br>
+size_y  = 72<br>
+size_z = 70<br>
+<br>
+exhaustiveness  = 8
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📁 Localização</div>
+            <p>Salve na pasta de trabalho <strong>Mult_lig</strong></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">5</span>
+            Quinta etapa: Preparo dos ligantes
+        </div>
+        <p class="content-text">No Open Babel:</p>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                INPUT FORMAT → selecione o formato de entrada dos seus ligantes
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                Clique em "..." → procure a pasta com todos os ligantes a serem convertidos
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.</span>
+                Abaixo de CONVERT selecione: "Adds hydrogen to polar atoms only"
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">4.</span>
+                OUTPUT FORMAT → selecione o formato de saída (.pdbqt)
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">5.</span>
+                Clique em "..." → selecione a pasta de destino dos ligantes convertidos
+            </div>
+        </div>
+        
+        <div class="info-box warning">
+            <div class="info-box-title">💡 Renomeação</div>
+            <p>Renomeie desta forma <code>(*.pdbqt)</code> para preservar os nomes. Exemplo:</p>
+            <div class="code-block" style="margin-top: 0.5rem;">
+~\Dock_Vina\ligantes\ligante.pdbqt → edite para ~\Dock_Vina\ligantes\*.pdbqt
+            </div>
+        </div>
+        
+        <p class="content-text">Clique em <strong>CONVERT</strong> para converter todos os ligantes.</p>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/vina/multiplos_openbabel.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Conversão de múltiplos ligantes com Open Babel</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">6</span>
+            Sexta etapa: Execução do Docking
+        </div>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                Navegue até o diretório:
+                <div class="code-block" style="margin: 0.5rem 0;">
+Linux   → cd ~/Mult_lig<br>
+Windows → cd %USERPROFILE%\Mult_lig
+                </div>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                Execute o comando:
+                <div class="code-block" style="margin: 0.5rem 0;">
+python3 multiplo_lig.py
+                </div>
+            </div>
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📄 Resultado</div>
+            <p>Será gerado o arquivo <code>resultados_vina.csv</code> delimitado por vírgulas com as energias dos ligantes.</p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/vina/multiplos_execucao.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Execução do docking para múltiplos ligantes</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 1 ==================== -->
+<section id="ad4-etapa1" class="content-section">
+    <h2 class="section-heading">Primeira etapa: Preparação da pasta de trabalho</h2>
+
+    <p class="content-text">
+        No seu computador crie uma pasta de trabalho contendo os arquivos:
+    </p>
+    <ul class="custom-list">
+        <li>receptor.pdb</li>
+        <li>ligante.pdb (ou pasta com múltiplos ligantes)</li>
+        <li>pasta com nome <strong>resultados</strong></li>
+    </ul>
+
+    <div class="info-box">
+        <div class="info-box-title">📁 Nome da pasta</div>
+        <p>Aqui o nome da pasta será <strong>Dock4</strong></p>
+    </div>
+
+    <!-- VÍDEO -->
+    <div class="media-container">
+        <video controls>
+            <source src="assets/videos/ad4/etapa1_preparacao.mp4" type="video/mp4">
+            Seu navegador não suporta vídeo HTML5.
+        </video>
+        <div class="media-caption">Vídeo: Preparação da pasta de trabalho para AutoDock 4</div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 2 ==================== -->
+<section id="ad4-etapa2" class="content-section">
+    <h2 class="section-heading">Segunda etapa: Preparo do receptor</h2>
+
+    <p class="content-text">
+        Abra o AutoDockTools-1.5.7, adicione o receptor, remova a água, remova o ligante complexado,
+        adicione hidrogênios polares, adicione cargas Kollman e salve o receptor em .pdbqt.
+    </p>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Remover água
+        </div>
+        <div class="code-block">
+File → Read Molecule<br>
+Edit → Delete Water
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa2_remover_agua.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Remoção de água</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Remover ligante complexado
+        </div>
+        <div class="code-block">
+Select → Select From String<br>
+Residue Sets → Ligand → Add → Dismiss<br>
+Edit → Delete → Delete Selected Atoms → Continue
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa2_remover_ligante.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Remoção do ligante complexado</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Adicionar Hidrogênios Polares
+        </div>
+        <div class="code-block">
+Edit → Hidrogens → Add → Polar Only → OK
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa2_hidrogenios.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Adição de hidrogênios polares</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Adicionar Cargas
+        </div>
+        <div class="code-block">
+Edit → Charges → Add Kollman Charges
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa2_cargas.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Adição de cargas Kollman</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">5</span>
+            Salvar receptor em .pdbqt
+        </div>
+        <div class="code-block">
+Grid → Macromolecule → Choose → selecione seu receptor<br>
+Select Molecule → OK → salvar como 6WX4.pdbqt
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📁 Localização</div>
+            <p>Salve na pasta <strong>Dock4</strong></p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa2_salvar_receptor.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Salvando o receptor em .pdbqt</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 3 ==================== -->
+<section id="ad4-etapa3" class="content-section">
+    <h2 class="section-heading">Terceira etapa: Grid box</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Selecione os resíduos que compõem o sítio
+        </div>
+        <p class="content-text">
+            Na barra lateral à esquerda (guia Dashboard) clique no mais (+) ao lado do receptor
+            para exibir os resíduos. Selecione os resíduos do sítio de ligação clicando no círculo
+            à direita (select/deselect (S)).
+        </p>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa3_selecionar_residuos.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Seleção dos resíduos do sítio ativo</div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">🔢 Resíduos utilizados</div>
+            <p>106, 109, 110, 111, 162, 163, 164, 247, 248, 264, 268, 271, 272, 286</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Determinar tamanho da caixa e centro da caixa
+        </div>
+        <div class="code-block">
+Grid → Grid Box → File → Close saving current
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">💡 Dica</div>
+            <p>Em <code>View → Show box as lines</code> facilita a exibição da caixa</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Salvar arquivo GPF
+        </div>
+        <div class="code-block">
+Grid → Output → Save GPF → salve como grid.gpf
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📁 Localização</div>
+            <p>Salve na pasta <strong>Dock4</strong></p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa3_grid_gpf.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Salvando o arquivo GPF</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 4 ==================== -->
+<section id="ad4-etapa4" class="content-section">
+    <h2 class="section-heading">Quarta etapa: Criar DPF</h2>
+
+    <div class="card">
+        <p class="content-text">Passos para criação do arquivo DPF:</p>
+        
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                <code>Docking → Ligand → Open → selecione um ligante → Open → Accept</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                <code>Docking → Macromolecule → Set Rigid Filename → escolha o receptor → Open</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.</span>
+                <code>Docking → Macromolecule → Set Flexible Residues Filename → escolha o ligante → Open</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">4.</span>
+                <code>Docking → Ligand → Choose → Selecione o ligante → Select ligand → Accept</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">5.</span>
+                <code>Docking → Search Parameters → Genetic Algorithm (padrão) → Accept</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">6.</span>
+                <code>Docking → Docking Parameters → Accept</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">7.</span>
+                <code>Docking → Other Options → AutoDock 4.2 Parameters → Accept</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">8.</span>
+                <code>Docking → Output → Lamarckian → salve como DPF.dpf 💡</code>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-box-title">💡 Atenção</div>
+            <p>Escolha a opção adequada para seu docking (Lamarckian, Genetic Algorithm, etc.)</p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa4_criar_dpf.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Criação do arquivo DPF</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 5 ==================== -->
+<section id="ad4-etapa5" class="content-section">
+    <h2 class="section-heading">Quinta etapa: Preparação dos arquivos com Raccoon | AutoDock VC</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Navegue até o diretório de instalação do mgltools
+        </div>
+        <div class="code-block">
+Linux → cd /usr/local/mgltools_i86Linux2_1.5.4/bin/<br>
+Windows → cd C:\Program Files (x86)\MGLTools-1.5.7
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Execute Raccoon
+        </div>
+        <p class="content-text">Adicione o script <code>raccoon.py</code> no diretório do mgltools</p>
+        <div class="code-block">
+pythonsh raccoon.py      # Linux<br>
+python.exe raccoon.py    # Windows
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Navegue pelas guias da interface
+        </div>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">3.1</span>
+                <strong>Ligand(s)</strong> → Add ligands ou Add directory → selecione ligantes ou pasta com ligantes → Abrir
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.2</span>
+                <strong>Receptor(s)</strong> → Add receptor file → selecione o receptor → Abrir
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.3</span>
+                <strong>Maps</strong> → Affinity maps → Load template → selecione grid.gpf → Abrir
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.4</span>
+                <strong>Docking</strong> → select docking setup → From template → Load template → selecione dpf.dpf
+            </div>
+        </div>
+        <div class="info-box warning">
+            <div class="info-box-title">⚠️ Arquivo necessário</div>
+            <p>Caso seja requisitado o AD4.1_bound.dat clique em OK → selecione AD4.1_bound.dat → Abrir</p>
+        </div>
+        <div class="substep-item">
+            <span class="substep-number">3.5</span>
+            <strong>VS Generation</strong> → Set directory → selecione a pasta resultados → GENERATE
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">💡 Importante</div>
+            <p>A pasta Resultados deve estar vazia</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Executar o docking em todos os ligantes
+        </div>
+        <p class="content-text">Abra o terminal e navegue ao diretório resultados:</p>
+        
+        <div class="code-block" style="margin: 1rem 0;">
+Linux:<br>
+cd ~/Dock4/resultados<br>
+bash RunVS.sh<br>
+<br>
+Windows:<br>
+cd %USERPROFILE%\Dock4\resultados<br>
+RunVS.bat
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa5_raccoon.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Uso do Raccoon VS</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 6 ==================== -->
+<section id="ad4-etapa6" class="content-section">
+    <h2 class="section-heading">Sexta etapa: Análise dos resultados</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Passos para análise
+        </div>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">→</span>
+                <code>Analyze → Dockings → Open → Selecione o .dlg do ligante → Abrir → OK</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">→</span>
+                <code>Analyze → Macromolecule → Open → OK → Selecione o receptor.pdbqt → Abrir</code>
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">→</span>
+                <code>Analyze → Conformations → Play</code>
+            </div>
+        </div>
+        <p class="content-text">Na nova janela clique em <strong>&</strong> → abrirá a janela Set Play Options → selecione <strong>Show Info → Conformation</strong></p>
+        <div class="info-box">
+            <div class="info-box-title">📊 Resultado</div>
+            <p>Mostra o resultado de todas as conformações do ligante</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Critérios para escolha da melhor conformação
+        </div>
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Parâmetro</th>
+                    <th>O que procurar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>binding_energy</strong></td>
+                    <td>Quanto mais negativo, melhor</td>
+                </tr>
+                <tr>
+                    <td><strong>ligand_efficiency</strong></td>
+                    <td>Mais próximo de zero, melhor</td>
+                </tr>
+                <tr>
+                    <td><strong>inhib_constant</strong></td>
+                    <td>Mais próximo de zero, melhor</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Criar complexo proteína-ligante
+        </div>
+        <div class="code-block">
+Set Play Options → Write Complex → renomear.pdbqt → Salvar
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa6_analise.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Análise dos resultados do docking</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== AUTODOCK 4 - ETAPA 7 ==================== -->
+<section id="ad4-etapa7" class="content-section">
+    <h2 class="section-heading">Sétima etapa: Análise de Múltiplos Ligantes</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Navegue ao diretório Resultados
+        </div>
+        <div class="code-block">
+Linux   → cd ~/Dock4/Resultados<br>
+Windows → cd %USERPROFILE%\Dock4\Resultados
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Execute o script de análise
+        </div>
+        <p class="content-text">Adicione o script <code>resultado.py</code> no diretório com todos os dockings e execute:</p>
+        <div class="code-block">
+python resultados.py
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📄 Resultado</div>
+            <p>Será gerado o arquivo <code>docking_results.csv</code> delimitado por vírgulas com:</p>
+            <ul class="custom-list">
+                <li>binding_energy</li>
+                <li>inhib_constant</li>
+                <li>nome do ligante</li>
+                <li>pose (Modelo) de melhor energia referente ao ligante</li>
+            </ul>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/ad4/etapa7_multiplos.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Análise de múltiplos ligantes</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== ADCP - INSTALAÇÃO ==================== -->
+<section id="adcp-instalacao" class="content-section">
+    <h2 class="section-heading">Instalação do AutoDock CrankPep</h2>
+
+    <div class="info-box">
+        <div class="info-box-title">💻 Requisitos</div>
+        <p>Linux ou WSL (Windows Subsystem for Linux)</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Baixe e conceda permissões
+        </div>
+        <p class="content-text">Baixe o <code>ADFRsuite_Linux-x86_64_1.0_install</code> e execute:</p>
+        <div class="code-block">
+chmod a+x ADFRsuite_Linux-x86_64_1.0_install<br>
+./ADFRsuite_Linux-x86_64_1.0_install
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Instalação
+        </div>
+        <p class="content-text">Navegue ao diretório de instalação escolhido e execute:</p>
+        <div class="code-block">
+bash install.sh
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">⚠️ Variáveis de ambiente</div>
+            <p>Ao fim da instalação, será mostrado como atualizar a variável de ambiente PATH no arquivo <code>.cshrc</code> ou <code>.bashrc</code></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Configurar PATH
+        </div>
+        <div class="code-block">
+nano ~/.bashrc
+        </div>
+        <p class="content-text">Adicione ao final do arquivo:</p>
+        <div class="code-block">
+export PATH=/home/seuusuário/ADFRsuite-1.0/ADFRsuite_x86_64Linux_1.0/bin:$PATH
+        </div>
+        <p class="content-text">Salve e atualize:</p>
+        <div class="code-block">
+source ~/.bashrc
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Teste da instalação
+        </div>
+        <div class="code-block">
+which adcp
+        </div>
+        <p class="content-text">Deve retornar:</p>
+        <div class="code-block">
+/home/seuusuário/ADFRsuite-1.0/ADFRsuite_x86_64Linux_1.0/bin/adcp
+        </div>
+    </div>
+    
+    <!-- VÍDEO -->
+    <div class="media-container">
+        <video controls>
+            <source src="assets/videos/adcp/instalacao.mp4" type="video/mp4">
+            Seu navegador não suporta vídeo HTML5.
+        </video>
+        <div class="media-caption">Vídeo: Instalação do AutoDock CrankPep</div>
+    </div>
+</section>
+
+<!-- ==================== ADCP - REDOCKING ==================== -->
+<section id="adcp-redocking" class="content-section">
+    <h2 class="section-heading">Redocking com AutoDock CrankPep</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Preparação da pasta de trabalho
+        </div>
+        <p class="content-text">No seu computador crie uma pasta de trabalho (ex: <strong>ADCP_red</strong>)</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Preparo do PDB
+        </div>
+        <p class="content-text">No PyMol:</p>
+        <ul class="custom-list">
+            <li>Limpe a estrutura PDB (água e ligantes indesejados)</li>
+            <li>Separe a proteína do peptídeo</li>
+            <li>Adicione ambos os arquivos .pdb na pasta ADCP_red</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Preparo do Redocking
+        </div>
+        <p class="content-text">No terminal, navegue até ADCP_red e execute:</p>
+        
+        <div class="code-block" style="margin: 0.5rem 0;">
+# Protonar receptor e peptídeo<br>
+reduce 3I5R.pdb > 3I5R_H.pdb<br>
+reduce peptide.pdb > peptide_H.pdb<br>
+<br>
+# Converter para .pdbqt<br>
+prepare_receptor -r 3I5R_H.pdb<br>
+prepare_ligand -l peptide_H.pdb<br>
+<br>
+# Gerar target file (.trg)<br>
+agfr -r 3I5R_H.pdbqt -l peptide_H.pdbqt -o 3I5R
+        </div>
+        
+        <div class="info-box">
+            <div class="info-box-title">📦 Target file (.trg)</div>
+            <p>Contém: estrutura do receptor, mapas de afinidade (AutoGrid4), tipos atômicos suportados, pontos de translação (AutoSite) e metadados do docking.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Executar o docking
+        </div>
+        <div class="code-block">
+adcp -t 3I5R.trg -s krplpplps -N 20 -n 1000000 -o 3I5R_redocking -ref peptide_H.pdb
+        </div>
+        
+        <div class="info-box">
+            <div class="info-box-title">📄 Saída</div>
+            <p>Retorna:</p>
+            <ul class="custom-list">
+                <li>Estruturas finais ranqueadas após clustering (<code>3I5R_redocking_*.pdb</code>)</li>
+                <li>Trajetórias Monte Carlo (<code>3I5R_redocking_*.out</code>)</li>
+                <li>Arquivos principais (<code>3Q47_redocking_ranked_*.pdb</code>)</li>
+                <li>Tabela de resultados no terminal com pose, afinidade (kcal/mol) e RMSD</li>
+            </ul>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/adcp/redocking.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Redocking com AutoDock CrankPep</div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== ADCP - DOCKING ==================== -->
+<section id="adcp-docking" class="content-section">
+    <h2 class="section-heading">Docking AutoDock CrankPep</h2>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Preparação da pasta de trabalho
+        </div>
+        <p class="content-text">No seu computador crie uma pasta de trabalho (ex: <strong>ADCP_dock</strong>)</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Preparo do PDB
+        </div>
+        <p class="content-text">No PyMol:</p>
+        <ul class="custom-list">
+            <li>Limpe a estrutura PDB (água e ligantes indesejados)</li>
+            <li>Remova o peptídeo da proteína</li>
+            <li>Adicione o arquivo .pdb na pasta ADCP_dock</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Preparo do docking
+        </div>
+        <p class="content-text">No terminal, navegue até ADCP_dock e execute:</p>
+        <div class="code-block">
+# Protonar receptor<br>
+reduce 3I5R.pdb > 3I5R_H.pdb<br>
+<br>
+# Converter para .pdbqt<br>
+prepare_receptor -r 3I5R_H.pdb
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/adcp/docking_preparo.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Preparo do receptor para docking</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Gerar target file (.trg) manualmente
+        </div>
+        <p class="content-text">No terminal execute:</p>
+        <div class="code-block">
+agfrgui
+        </div>
+        
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                Em <strong>Receptor pdbqt</strong> adicione seu receptor protonado
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                Na engrenagem em <strong>ligand binding pockets</strong> selecione version 1.1
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">3.</span>
+                Clique em <strong>Compute pockets [AutoSite 1.1]</strong> e selecione seu sítio
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">4.</span>
+                Em <strong>docking box</strong> clique em "box all displayed ligand binding pocket" e ajuste o tamanho com padding
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">5.</span>
+                Clique em <strong>generate target file ...</strong> → renomeie (ex: 111.trg) → Save
+            </div>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/adcp/target_file.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Criação manual do target file</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">5</span>
+            Executar o docking
+        </div>
+        <div class="code-block">
+adcp -t 111.trg -s aqtqslvypfpgpipk -N 20 -n 50000 -o pep1_docking > pep1.log
+        </div>
+        
+        <table class="custom-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>Argumento</th>
+                    <th>Descrição</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>-t</code></td>
+                    <td>arquivo target</td>
+                </tr>
+                <tr>
+                    <td><code>-s</code></td>
+                    <td>sequência do peptídeo</td>
+                </tr>
+                <tr>
+                    <td><code>-N</code></td>
+                    <td>número de réplicas (buscas independentes)</td>
+                </tr>
+                <tr>
+                    <td><code>-n</code></td>
+                    <td>passos de Monte Carlo por réplica</td>
+                </tr>
+                <tr>
+                    <td><code>-o</code></td>
+                    <td>prefixo dos arquivos de saída</td>
+                </tr>
+                <tr>
+                    <td><code>-ref</code></td>
+                    <td>estrutura de referência (para RMSD)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- ==================== REDOCKING VALIDAÇÃO ==================== -->
+<section id="redocking" class="content-section">
+    <h2 class="section-heading">Redocking no AutoDock Vina ou AutoDock 4</h2>
+
+    <div class="info-box">
+        <div class="info-box-title">🎯 Objetivo</div>
+        <p>Não é prever a conformação do ligante, mas sim avaliar se o algoritmo consegue reproduzir uma pose conhecida no mesmo sítio.</p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">1</span>
+            Preparo do receptor
+        </div>
+        <p class="content-text">
+            Realize a preparação do receptor conforme os tutoriais do AutoDock Vina ou AutoDock 4.
+            Salve em .pdbqt em sua pasta de trabalho.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">2</span>
+            Criação do Grid
+        </div>
+        <p class="content-text">
+            Crie o grid ao redor do ligante cristalográfico.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">3</span>
+            Arquivo de configuração
+        </div>
+        <div class="code-block">
+receptor = 6WX4.pdbqt<br>
+ligand = redocking.pdbqt<br>
+<br>
+out = res_out.pdbqt<br>
+<br>
+center_x  = 10.233<br>
+center_y  = -26.861<br>
+center_z  = -37.2<br>
+<br>
+size_x  = 40<br>
+size_y  = 40<br>
+size_z = 40<br>
+<br>
+exhaustiveness  = 8
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">4</span>
+            Preparar ligante cristalográfico
+        </div>
+        <div class="substeps">
+            <div class="substep-item">
+                <span class="substep-number">1.</span>
+                No PyMol extraia o ligante cristalográfico do PDB
+            </div>
+            <div class="substep-item">
+                <span class="substep-number">2.</span>
+                No AutoDockTools:
+                <div class="code-block" style="margin: 0.5rem 0;">
+Ligand → Input → Open → ligante.pdb → Open<br>
+Ligand → Torsion Tree → Choose Torsions → Make all active bonds non-rotatable → Done<br>
+Ligand → Output → Save as Pdbq → redocking.pdbqt
+                </div>
+            </div>
+        </div>
+        <div class="info-box">
+            <div class="info-box-title">📁 Localização</div>
+            <p>Salve na pasta <strong>validacao</strong></p>
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/redocking/preparo_ligante.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Preparo do ligante cristalográfico</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">5</span>
+            Execução do Docking
+        </div>
+        <p class="content-text">
+            Utilize o mesmo processo de execução descrito nos tutoriais do AutoDock Vina ou AutoDock 4.
+        </p>
+    </div>
+
+    <div class="card">
+        <div class="card-title">
+            <span class="step-number">6</span>
+            Avaliação do RMSD
+        </div>
+        <p class="content-text">No PyMol:</p>
+        <div class="code-block">
+File → Open → 6WX4.pdb          # Complexo cristalográfico<br>
+File → Open → res_out_ligand_1.pdbqt  # Pose 1 do resultado docking<br>
+<br>
+# Na janela de comando PyMol, execute:<br>
+align 6WX4, res_out_ligand_1
+        </div>
+        
+        <!-- VÍDEO -->
+        <div class="media-container">
+            <video controls>
+                <source src="assets/videos/redocking/rmsd_analise.mp4" type="video/mp4">
+                Seu navegador não suporta vídeo HTML5.
+            </video>
+            <div class="media-caption">Vídeo: Avaliação do RMSD</div>
+        </div>
+        
+        <table class="custom-table" style="margin-top: 1rem;">
+            <thead>
+                <tr>
+                    <th>RMSD (Å)</th>
+                    <th>Interpretação</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>≤ 1.0 Å</td>
+                    <td><strong style="color: var(--success-color);">Excelente</strong></td>
+                </tr>
+                <tr>
+                    <td>≤ 2.0 Å</td>
+                    <td><strong style="color: var(--success-color);">Aceitável / Validado</strong></td>
+                </tr>
+                <tr>
+                    <td>2.0–3.0 Å</td>
+                    <td><strong style="color: var(--warning-color);">Questionável</strong></td>
+                </tr>
+                <tr>
+                    <td>> 3.0 Å</td>
+                    <td><strong style="color: #ef4444;">Falha no protocolo</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+            <!-- ==================== MATERIAIS UTILIZADOS ==================== -->
+            <section id="materiais" class="content-section">
+                <h2 class="section-heading">Materiais utilizados nos Docking</h2>
+
+                <div class="card">
+                    <div class="card-title">Receptor: PLpro, PDB: 6WX4</div>
+                    <p class="content-text">Utilizado no AutoDock Vina, AutoDock 4 e Redocking</p>
+                    <p class="content-text">
+                        <a href="https://www.rcsb.org/structure/6WX4" class="custom-link" target="_blank">https://www.rcsb.org/structure/6WX4</a>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">Ligante: geranyl_isobutanoate, PubChem CID: 6086514</div>
+                    <p class="content-text">Utilizado no AutoDock Vina e AutoDock 4</p>
+                    <p class="content-text">
+                        <a href="https://pubchem.ncbi.nlm.nih.gov/compound/6086514" class="custom-link" target="_blank">https://pubchem.ncbi.nlm.nih.gov/compound/6086514</a>
+                    </p>
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Download</div>
+                        <p>Baixe em SDF 3D e converta em .pdb</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">PDB usado no AutoDock CrankPep</div>
+                    <p class="content-text">
+                        <a href="https://www.rcsb.org/structure/3I5R" class="custom-link" target="_blank">https://www.rcsb.org/structure/3I5R</a>
+                    </p>
+                </div>
+
+                <h3 class="section-subheading">Software</h3>
+
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h3>AutoDockTools-1.5.7</h3>
+                        <p>Instalados via mgltools_1.5.7</p>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://ccsb.scripps.edu/mgltools/downloads/" class="custom-link" target="_blank">ccsb.scripps.edu/mgltools</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>AutoDock Vina</h3>
+                        <p>vina_1.2.7 e vina_split_1.2.7</p>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://vina.scripps.edu/downloads/" class="custom-link" target="_blank">vina.scripps.edu/downloads</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>AutoDock 4</h3>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://autodock.scripps.edu/download-autodock4/" class="custom-link" target="_blank">autodock.scripps.edu</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>Raccoon VS</h3>
+                        <p>Utilizado no AutoDock 4</p>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://autodock.scripps.edu/resources/raccoon/" class="custom-link" target="_blank">autodock.scripps.edu/resources</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>Open Babel 3.1.1</h3>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://github.com/openbabel/openbabel/releases" class="custom-link" target="_blank">github.com/openbabel</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>PyMol</h3>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://pymol.org/edu/" class="custom-link" target="_blank">pymol.org/edu</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>ADFRsuite</h3>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://ccsb.scripps.edu/adcp/downloads/" class="custom-link" target="_blank">ccsb.scripps.edu/adcp</a>
+                        </p>
+                    </div>
+
+                    <div class="comparison-card">
+                        <h3>AD4.1_bound.dat</h3>
+                        <p style="margin-top: 0.5rem;">
+                            <a href="https://github.com/marekolsak/fastgrid/blob/master/autogrid_original_4_2_1_ref/autodock/AD4.1_bound.dat" class="custom-link" target="_blank">github.com/marekolsak</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== AUTORES ==================== -->
+            <section id="autores" class="content-section">
+                <h2 class="section-heading">Autores</h2>
+
+                <div class="card">
+                    <div class="card-title">Equipe</div>
+                    <div class="authors">
+                        <p>Xsadadsasd</p>
+                        <p>dasddasdddas</p>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        // Navigation functionality
+        const navItems = document.querySelectorAll('.nav-item');
+        const contentSections = document.querySelectorAll('.content-section');
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionId = item.getAttribute('data-section');
+                
+                // Remove active class from all items and sections
+                navItems.forEach(nav => nav.classList.remove('active'));
+                contentSections.forEach(section => section.classList.remove('active'));
+                
+                // Add active class to clicked item
+                item.classList.add('active');
+                
+                // Show corresponding content section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    
+                    // Smooth scroll to top of content
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            const activeItem = document.querySelector('.nav-item.active');
+            const allItems = Array.from(navItems);
+            const currentIndex = allItems.indexOf(activeItem);
+
+            if (e.key === 'ArrowDown' && currentIndex < allItems.length - 1) {
+                allItems[currentIndex + 1].click();
+                e.preventDefault();
+            } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+                allItems[currentIndex - 1].click();
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
