@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+# No local de execução do script será gerado o arquivo resultados_vina.csv
+# delimitado por vírgulas com as energias dos ligantes
+
 import os
 import subprocess
 import platform
