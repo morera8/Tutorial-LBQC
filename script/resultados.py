@@ -1,3 +1,6 @@
+# No local de execução do script será gerado o arquivo docking_results.csv 
+# delimitado por vírgulas com ligante, pose, energia (kcal/mol) e Ki (nM)
+
 import os
 import csv
 
@@ -6,8 +9,6 @@ import csv
 # =========================================================
 BASE_DIR = " ../Dock4/resutados"   # Add o diretório
 OUTPUT_FILE = "docking_results.csv"
-
-
 # =========================================================
 # FUNÇÕES DE PARSING
 # =========================================================
