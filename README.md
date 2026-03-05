@@ -16,7 +16,7 @@ Este repositório apresenta guias práticos para execução de docking molecular
 
 🧬 Docking proteína–peptídeo (AutoDock CrankPep)
 
-📖 Público-Alvo
+📖 Público
 
 • Bioinformatas
 
