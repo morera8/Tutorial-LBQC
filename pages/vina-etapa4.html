@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vina Etapa 4 - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item active">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Quarta etapa: Preparo do ligante</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Converter ligante para .pdb
+                    </div>
+                    <p class="content-text">
+                        Na guia Dashboard oculte o receptor clicando no círculo à direita (display/undisplay (L)).
+                    </p>
+                    <p class="content-text">No PyMol:</p>
+                    <div class="code-block">
+File → Open → selecione o arquivo .sdf → Abrir<br>
+File → Export Structure → Export Molecule → geranyl_isobutanoate.pdb → Salvar
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Atenção</div>
+                        <p>Antes de salvar mude o tipo de arquivo para .pdb</p>
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_converter_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Conversão do ligante para .pdb</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Adicionar Hidrogênios Polares
+                    </div>
+                    <p class="content-text">No AutoDockTools:</p>
+                    <div class="code-block">
+Ligand → Input → Open → geranyl_isobutanoate.pdb → Open<br>
+Edit → Hidrogens → Add → Polar Only → OK
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_hidrogenios_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Adição de hidrogênios polares ao ligante</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Salvar ligante em .pdbqt
+                    </div>
+                    <div class="code-block">
+Ligand → Output → Save as PDBQT → salvar ligante como geranyl_isobutanoate.pdbqt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Dock_Vina</strong></p>
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa4_salvar_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Salvando o ligante em .pdbqt</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

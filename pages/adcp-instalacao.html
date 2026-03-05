@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADCP Instalação - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item active">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Instalação do AutoDock CrankPep</h2>
+
+                <div class="info-box">
+                    <div class="info-box-title">💻 Requisitos</div>
+                    <p>Linux ou WSL (Windows Subsystem for Linux)</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Baixe e conceda permissões
+                    </div>
+                    <p class="content-text">Baixe o <code>ADFRsuite_Linux-x86_64_1.0_install</code> e execute:</p>
+                    <div class="code-block">
+chmod a+x ADFRsuite_Linux-x86_64_1.0_install<br>
+./ADFRsuite_Linux-x86_64_1.0_install
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Instalação
+                    </div>
+                    <p class="content-text">Navegue ao diretório de instalação escolhido e execute:</p>
+                    <div class="code-block">
+bash install.sh
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">⚠️ Variáveis de ambiente</div>
+                        <p>Ao fim da instalação, será mostrado como atualizar a variável de ambiente PATH no arquivo <code>.cshrc</code> ou <code>.bashrc</code></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Configurar PATH
+                    </div>
+                    <div class="code-block">
+nano ~/.bashrc
+                    </div>
+                    <p class="content-text">Adicione ao final do arquivo:</p>
+                    <div class="code-block">
+export PATH=/home/seuusuário/ADFRsuite-1.0/ADFRsuite_x86_64Linux_1.0/bin:$PATH
+                    </div>
+                    <p class="content-text">Salve e atualize:</p>
+                    <div class="code-block">
+source ~/.bashrc
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Teste da instalação
+                    </div>
+                    <div class="code-block">
+which adcp
+                    </div>
+                    <p class="content-text">Deve retornar:</p>
+                    <div class="code-block">
+/home/seuusuário/ADFRsuite-1.0/ADFRsuite_x86_64Linux_1.0/bin/adcp
+                    </div>
+                </div>
+                
+                <div class="media-container">
+                    <video controls>
+                        <source src="assets/videos/adcp/instalacao.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeo HTML5.
+                    </video>
+                    <div class="media-caption">Vídeo: Instalação do AutoDock CrankPep</div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

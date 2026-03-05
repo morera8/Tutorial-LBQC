@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD4 Etapa 5 - Raccoon - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item active">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Quinta etapa: Preparação dos arquivos com Raccoon | AutoDock VC</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Navegue até o diretório de instalação do mgltools
+                    </div>
+                    <div class="code-block">
+Linux → cd /usr/local/mgltools_i86Linux2_1.5.4/bin/<br>
+Windows → cd C:\Program Files (x86)\MGLTools-1.5.7
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Execute Raccoon
+                    </div>
+                    <p class="content-text">Adicione o script <code>raccoon.py</code> no diretório do mgltools</p>
+                    <div class="code-block">
+pythonsh raccoon.py      # Linux<br>
+python.exe raccoon.py    # Windows
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Navegue pelas guias da interface
+                    </div>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">3.1</span>
+                            <strong>Ligand(s)</strong> → Add ligands ou Add directory → selecione ligantes ou pasta com ligantes → Abrir
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">3.2</span>
+                            <strong>Receptor(s)</strong> → Add receptor file → selecione o receptor → Abrir
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">3.3</span>
+                            <strong>Maps</strong> → Affinity maps → Load template → selecione grid.gpf → Abrir
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">3.4</span>
+                            <strong>Docking</strong> → select docking setup → From template → Load template → selecione dpf.dpf
+                        </div>
+                    </div>
+                    <div class="info-box warning">
+                        <div class="info-box-title">⚠️ Arquivo necessário</div>
+                        <p>Caso seja requisitado o AD4.1_bound.dat clique em OK → selecione AD4.1_bound.dat → Abrir</p>
+                    </div>
+                    <div class="substep-item">
+                        <span class="substep-number">3.5</span>
+                        <strong>VS Generation</strong> → Set directory → selecione a pasta resultados → GENERATE
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Importante</div>
+                        <p>A pasta Resultados deve estar vazia</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Executar o docking em todos os ligantes
+                    </div>
+                    <p class="content-text">Abra o terminal e navegue ao diretório resultados:</p>
+                    
+                    <div class="code-block" style="margin: 1rem 0;">
+Linux:<br>
+cd ~/Dock4/resultados<br>
+bash RunVS.sh<br>
+<br>
+Windows:<br>
+cd %USERPROFILE%\Dock4\resultados<br>
+RunVS.bat
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/ad4/etapa5_raccoon.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Uso do Raccoon VS</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

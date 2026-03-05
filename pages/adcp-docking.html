@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADCP Docking - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item active">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Docking AutoDock CrankPep</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Preparação da pasta de trabalho
+                    </div>
+                    <p class="content-text">No seu computador crie uma pasta de trabalho (ex: <strong>ADCP_dock</strong>)</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Preparo do PDB
+                    </div>
+                    <p class="content-text">No PyMol:</p>
+                    <ul class="custom-list">
+                        <li>Limpe a estrutura PDB (água e ligantes indesejados)</li>
+                        <li>Remova o peptídeo da proteína</li>
+                        <li>Adicione o arquivo .pdb na pasta ADCP_dock</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Preparo do docking
+                    </div>
+                    <p class="content-text">No terminal, navegue até ADCP_dock e execute:</p>
+                    <div class="code-block">
+# Protonar receptor<br>
+reduce 3I5R.pdb > 3I5R_H.pdb<br>
+<br>
+# Converter para .pdbqt<br>
+prepare_receptor -r 3I5R_H.pdb
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/adcp/docking_preparo.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Preparo do receptor para docking</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Gerar target file (.trg) manualmente
+                    </div>
+                    <p class="content-text">No terminal execute:</p>
+                    <div class="code-block">
+agfrgui
+                    </div>
+                    
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">1.</span>
+                            Em <strong>Receptor pdbqt</strong> adicione seu receptor protonado
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">2.</span>
+                            Na engrenagem em <strong>ligand binding pockets</strong> selecione version 1.1
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">3.</span>
+                            Clique em <strong>Compute pockets [AutoSite 1.1]</strong> e selecione seu sítio
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">4.</span>
+                            Em <strong>docking box</strong> clique em "box all displayed ligand binding pocket" e ajuste o tamanho com padding
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">5.</span>
+                            Clique em <strong>generate target file ...</strong> → renomeie (ex: 111.trg) → Save
+                        </div>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/adcp/target_file.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Criação manual do target file</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">5</span>
+                        Executar o docking
+                    </div>
+                    <div class="code-block">
+adcp -t 111.trg -s aqtqslvypfpgpipk -N 20 -n 50000 -o pep1_docking > pep1.log
+                    </div>
+                    
+                    <table class="custom-table" style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>Argumento</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>-t</code></td>
+                                <td>arquivo target</td>
+                            </tr>
+                            <tr>
+                                <td><code>-s</code></td>
+                                <td>sequência do peptídeo</td>
+                            </tr>
+                            <tr>
+                                <td><code>-N</code></td>
+                                <td>número de réplicas (buscas independentes)</td>
+                            </tr>
+                            <tr>
+                                <td><code>-n</code></td>
+                                <td>passos de Monte Carlo por réplica</td>
+                            </tr>
+                            <tr>
+                                <td><code>-o</code></td>
+                                <td>prefixo dos arquivos de saída</td>
+                            </tr>
+                            <tr>
+                                <td><code>-ref</code></td>
+                                <td>estrutura de referência (para RMSD)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

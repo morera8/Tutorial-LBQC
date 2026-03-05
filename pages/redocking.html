@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redocking - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item active">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Redocking no AutoDock Vina ou AutoDock 4</h2>
+
+                <div class="info-box">
+                    <div class="info-box-title">🎯 Objetivo</div>
+                    <p>Não é prever a conformação do ligante, mas sim avaliar se o algoritmo consegue reproduzir uma pose conhecida no mesmo sítio.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Preparo do receptor
+                    </div>
+                    <p class="content-text">
+                        Realize a preparação do receptor conforme os tutoriais do AutoDock Vina ou AutoDock 4.
+                        Salve em .pdbqt em sua pasta de trabalho.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Criação do Grid
+                    </div>
+                    <p class="content-text">
+                        Crie o grid ao redor do ligante cristalográfico.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Arquivo de configuração
+                    </div>
+                    <div class="code-block">
+receptor = 6WX4.pdbqt<br>
+ligand = redocking.pdbqt<br>
+<br>
+out = res_out.pdbqt<br>
+<br>
+center_x  = 10.233<br>
+center_y  = -26.861<br>
+center_z  = -37.2<br>
+<br>
+size_x  = 40<br>
+size_y  = 40<br>
+size_z = 40<br>
+<br>
+exhaustiveness  = 8
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Preparar ligante cristalográfico
+                    </div>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">1.</span>
+                            No PyMol extraia o ligante cristalográfico do PDB
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">2.</span>
+                            No AutoDockTools:
+                            <div class="code-block" style="margin: 0.5rem 0;">
+Ligand → Input → Open → ligante.pdb → Open<br>
+Ligand → Torsion Tree → Choose Torsions → Make all active bonds non-rotatable → Done<br>
+Ligand → Output → Save as Pdbq → redocking.pdbqt
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>validacao</strong></p>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/redocking/preparo_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Preparo do ligante cristalográfico</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">5</span>
+                        Execução do Docking
+                    </div>
+                    <p class="content-text">
+                        Utilize o mesmo processo de execução descrito nos tutoriais do AutoDock Vina ou AutoDock 4.
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">6</span>
+                        Avaliação do RMSD
+                    </div>
+                    <p class="content-text">No PyMol:</p>
+                    <div class="code-block">
+File → Open → 6WX4.pdb          # Complexo cristalográfico<br>
+File → Open → res_out_ligand_1.pdbqt  # Pose 1 do resultado docking<br>
+<br>
+# Na janela de comando PyMol, execute:<br>
+align 6WX4, res_out_ligand_1
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/redocking/rmsd_analise.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Avaliação do RMSD</div>
+                    </div>
+                    
+                    <table class="custom-table" style="margin-top: 1rem;">
+                        <thead>
+                            <tr>
+                                <th>RMSD (Å)</th>
+                                <th>Interpretação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>≤ 1.0 Å</td>
+                                <td><strong style="color: var(--success-color);">Excelente</strong></td>
+                            </tr>
+                            <tr>
+                                <td>≤ 2.0 Å</td>
+                                <td><strong style="color: var(--success-color);">Aceitável / Validado</strong></td>
+                            </tr>
+                            <tr>
+                                <td>2.0–3.0 Å</td>
+                                <td><strong style="color: var(--warning-color);">Questionável</strong></td>
+                            </tr>
+                            <tr>
+                                <td>> 3.0 Å</td>
+                                <td><strong style="color: #ef4444;">Falha no protocolo</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

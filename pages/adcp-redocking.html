@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADCP Redocking - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item active">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Redocking com AutoDock CrankPep</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Preparação da pasta de trabalho
+                    </div>
+                    <p class="content-text">No seu computador crie uma pasta de trabalho (ex: <strong>ADCP_red</strong>)</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Preparo do PDB
+                    </div>
+                    <p class="content-text">No PyMol:</p>
+                    <ul class="custom-list">
+                        <li>Limpe a estrutura PDB (água e ligantes indesejados)</li>
+                        <li>Separe a proteína do peptídeo</li>
+                        <li>Adicione ambos os arquivos .pdb na pasta ADCP_red</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Preparo do Redocking
+                    </div>
+                    <p class="content-text">No terminal, navegue até ADCP_red e execute:</p>
+                    
+                    <div class="code-block" style="margin: 0.5rem 0;">
+# Protonar receptor e peptídeo<br>
+reduce 3I5R.pdb > 3I5R_H.pdb<br>
+reduce peptide.pdb > peptide_H.pdb<br>
+<br>
+# Converter para .pdbqt<br>
+prepare_receptor -r 3I5R_H.pdb<br>
+prepare_ligand -l peptide_H.pdb<br>
+<br>
+# Gerar target file (.trg)<br>
+agfr -r 3I5R_H.pdbqt -l peptide_H.pdbqt -o 3I5R
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-box-title">📦 Target file (.trg)</div>
+                        <p>Contém: estrutura do receptor, mapas de afinidade (AutoGrid4), tipos atômicos suportados, pontos de translação (AutoSite) e metadados do docking.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Executar o docking
+                    </div>
+                    <div class="code-block">
+adcp -t 3I5R.trg -s krplpplps -N 20 -n 1000000 -o 3I5R_redocking -ref peptide_H.pdb
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-box-title">📄 Saída</div>
+                        <p>Retorna:</p>
+                        <ul class="custom-list">
+                            <li>Estruturas finais ranqueadas após clustering (<code>3I5R_redocking_*.pdb</code>)</li>
+                            <li>Trajetórias Monte Carlo (<code>3I5R_redocking_*.out</code>)</li>
+                            <li>Arquivos principais (<code>3Q47_redocking_ranked_*.pdb</code>)</li>
+                            <li>Tabela de resultados no terminal com pose, afinidade (kcal/mol) e RMSD</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/adcp/redocking.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Redocking com AutoDock CrankPep</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vina Etapa 2 - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item active">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Segunda etapa: Preparo do receptor</h2>
+
+                <p class="content-text">
+                    Abra o AutoDockTools-1.5.7, adicione o receptor, remova a água, remova o ligante complexado do PDB baixado, remova ligantes indesejados, adicione hidrogênios polares e salve o receptor em .pdbqt
+                </p>
+
+                <div class="media-container">
+                    <video controls>
+                        <source src="assets/videos/vina/etapa2_receptor_geral.mp4" type="video/mp4">
+                        Seu navegador não suporta vídeo HTML5.
+                    </video>
+                    <div class="media-caption">Vídeo: Visão geral do preparo do receptor</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Remover água
+                    </div>
+                    <div class="code-block">
+File → Read Molecule<br>
+Em seguida: Edit → Delete Water
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_remover_agua.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Remoção de água</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Remover ligante complexado
+                    </div>
+                    <p class="content-text">Na barra de tarefas: <code>Select → Select From String</code></p>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">→</span>
+                            Residue Sets → selecione Ligand → clique em Add → clique em Dismiss
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">→</span>
+                            Isso seleciona o ligante a ser removido
+                        </div>
+                    </div>
+                    <p class="content-text" style="margin-top: 1rem;">Na barra de tarefas siga: <code>Edit → Delete → Delete Selected Atoms → Continue</code></p>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_remover_ligante.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Remoção do ligante complexado</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">💡 Nota</div>
+                        <p>Deletar átomos do ligante selecionado</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Adicionar Hidrogênios Polares
+                    </div>
+                    <div class="code-block">
+Edit → Hidrogens → Add → Polar Only → OK
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_hidrogenios.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Adição de hidrogênios polares</div>
+                    </div>
+
+                    <div class="info-box">
+                        <div class="info-box-title">ℹ️ Importante</div>
+                        <p>Vina utiliza uma função de pontuação de átomos unidos. Assim como no AutoDock, os hidrogênios polares são necessários nas estruturas de entrada para classificar corretamente os átomos pesados como doadores de ligações de hidrogênio (Manual - AutoDock Vina, acesso 17/01/2026).</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Salvar receptor em .pdbqt
+                    </div>
+                    <div class="code-block">
+Grid → Macromolecule → Choose → selecione seu receptor → Select Molecule → OK → salvar receptor como 6WX4.pdbqt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Dock_Vina</strong></p>
+                    </div>
+
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/etapa2_salvar_receptor.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Salvando o receptor em formato .pdbqt</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>

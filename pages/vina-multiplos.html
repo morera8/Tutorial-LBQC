@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vina Múltiplos - Tutorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Bitter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title">Tutorial</h1>
+                <p class="sidebar-subtitle">Docking Molecular</p>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Introdução</div>
+                <a href="ferramentas.html" class="nav-item">Ferramentas de docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock Vina</div>
+                <a href="vina-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="vina-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="vina-etapa3.html" class="nav-item">Grid box</a>
+                <a href="vina-etapa4.html" class="nav-item">Preparo do ligante</a>
+                <a href="vina-etapa5.html" class="nav-item">Execução do Docking</a>
+                <a href="vina-multiplos.html" class="nav-item active">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock 4</div>
+                <a href="ad4-etapa1.html" class="nav-item">Preparação da pasta</a>
+                <a href="ad4-etapa2.html" class="nav-item">Preparo do receptor</a>
+                <a href="ad4-etapa3.html" class="nav-item">Grid box</a>
+                <a href="ad4-etapa4.html" class="nav-item">Criar DPF</a>
+                <a href="ad4-etapa5.html" class="nav-item">Preparação com Raccoon</a>
+                <a href="ad4-etapa6.html" class="nav-item">Análise dos resultados</a>
+                <a href="ad4-etapa7.html" class="nav-item">Múltiplos Ligantes</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">AutoDock CrankPep</div>
+                <a href="adcp-instalacao.html" class="nav-item">Instalação</a>
+                <a href="adcp-redocking.html" class="nav-item">Redocking</a>
+                <a href="adcp-docking.html" class="nav-item">Docking</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Validação</div>
+                <a href="redocking.html" class="nav-item">Redocking (Vina/AD4)</a>
+            </div>
+
+            <div class="nav-section">
+                <div class="section-title">Recursos</div>
+                <a href="materiais.html" class="nav-item">Materiais utilizados</a>
+                <a href="autores.html" class="nav-item">Autores</a>
+            </div>
+        </nav>
+
+        <main class="content">
+            <section class="content-section">
+                <h2 class="section-heading">Múltiplos Ligantes</h2>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">1</span>
+                        Primeira etapa: Preparação da pasta de trabalho
+                    </div>
+                    <p class="content-text">Crie uma pasta de trabalho contendo:</p>
+                    <ul class="custom-list">
+                        <li>receptor.pdb</li>
+                        <li>pasta <strong>ligantes</strong> contendo ligantes a serem convertidos</li>
+                        <li>pasta <strong>resultados</strong></li>
+                        <li>pasta <strong>ligantes_conv</strong> para salvar os ligantes convertidos</li>
+                        <li>arquivo conf.txt sem <code>ligand</code> e <code>out</code></li>
+                        <li>vina_1.2.7, vina_split_1.2.7 e script multiplo_lig.py</li>
+                    </ul>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Nome da pasta</div>
+                        <p>Aqui o nome da pasta será <strong>Mult_lig</strong></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">2</span>
+                        Segunda etapa: Preparo do receptor
+                    </div>
+                    <p class="content-text">
+                        Processo idêntico ao preparo do receptor para docking único no AutoDock Vina.
+                    </p>
+                    <div class="code-block">
+1. File → Read Molecule<br>
+2. Edit → Delete Water<br>
+3. Select → Select From String → Residue Sets → Ligand → Add → Dismiss<br>
+4. Edit → Delete → Delete Selected Atoms → Continue<br>
+5. Edit → Hidrogens → Add → Polar Only → OK<br>
+6. Grid → Macromolecule → Choose → Select Molecule → OK → salvar como 6WX4.pdbqt
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta <strong>Mult_lig</strong></p>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/multiplos_receptor.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Preparo do receptor para múltiplos ligantes</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">3</span>
+                        Terceira etapa: Grid box
+                    </div>
+                    <p class="content-text">
+                        Processo idêntico à definição do Grid Box para docking único.
+                    </p>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">1.</span>
+                            Selecione os resíduos que compõem o sítio
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">2.</span>
+                            Determine tamanho da caixa e centro da caixa
+                        </div>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/multiplos_gridbox.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Definição do Grid Box para múltiplos ligantes</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">4</span>
+                        Quarta etapa: Arquivo conf.txt
+                    </div>
+                    <p class="content-text">Remova as linhas <code>ligand</code> e <code>out</code>:</p>
+                    <div class="code-block">
+receptor = 6WX4.pdbqt<br>
+<br>
+center_x  = 11.938<br>
+center_y  = -25.901<br>
+center_z  = -37.072<br>
+<br>
+size_x  = 56<br>
+size_y  = 72<br>
+size_z = 70<br>
+<br>
+exhaustiveness  = 8
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📁 Localização</div>
+                        <p>Salve na pasta de trabalho <strong>Mult_lig</strong></p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">5</span>
+                        Quinta etapa: Preparo dos ligantes
+                    </div>
+                    <p class="content-text">No Open Babel:</p>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">1.</span>
+                            INPUT FORMAT → selecione o formato de entrada dos seus ligantes
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">2.</span>
+                            Clique em "..." → procure a pasta com todos os ligantes a serem convertidos
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">3.</span>
+                            Abaixo de CONVERT selecione: "Adds hydrogen to polar atoms only"
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">4.</span>
+                            OUTPUT FORMAT → selecione o formato de saída (.pdbqt)
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">5.</span>
+                            Clique em "..." → selecione a pasta de destino dos ligantes convertidos
+                        </div>
+                    </div>
+                    
+                    <div class="info-box warning">
+                        <div class="info-box-title">💡 Renomeação</div>
+                        <p>Renomeie desta forma <code>(*.pdbqt)</code> para preservar os nomes. Exemplo:</p>
+                        <div class="code-block" style="margin-top: 0.5rem;">
+~\Dock_Vina\ligantes\ligante.pdbqt → edite para ~\Dock_Vina\ligantes\*.pdbqt
+                        </div>
+                    </div>
+                    
+                    <p class="content-text">Clique em <strong>CONVERT</strong> para converter todos os ligantes.</p>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/multiplos_openbabel.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Conversão de múltiplos ligantes com Open Babel</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span class="step-number">6</span>
+                        Sexta etapa: Execução do Docking
+                    </div>
+                    <div class="substeps">
+                        <div class="substep-item">
+                            <span class="substep-number">1.</span>
+                            Navegue até o diretório:
+                            <div class="code-block" style="margin: 0.5rem 0;">
+Linux   → cd ~/Mult_lig<br>
+Windows → cd %USERPROFILE%\Mult_lig
+                            </div>
+                        </div>
+                        <div class="substep-item">
+                            <span class="substep-number">2.</span>
+                            Execute o comando:
+                            <div class="code-block" style="margin: 0.5rem 0;">
+python3 multiplo_lig.py
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-box">
+                        <div class="info-box-title">📄 Resultado</div>
+                        <p>Será gerado o arquivo <code>resultados_vina.csv</code> delimitado por vírgulas com as energias dos ligantes.</p>
+                    </div>
+                    
+                    <div class="media-container">
+                        <video controls>
+                            <source src="assets/videos/vina/multiplos_execucao.mp4" type="video/mp4">
+                            Seu navegador não suporta vídeo HTML5.
+                        </video>
+                        <div class="media-caption">Vídeo: Execução do docking para múltiplos ligantes</div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <p>Tutorial de Docking Molecular - 2026</p>
+                    <p style="margin-top: 0.5rem;">Desenvolvido para fins educacionais</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/main.js"></script>
+</body>
+</html>
