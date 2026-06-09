@@ -164,11 +164,11 @@ Ligand → Output → Save as Pdbq → redocking.pdbqt
                     </div>
                     <p class="content-text">No PyMol:</p>
                     <div class="code-block">
-File → Open → 6WX4.pdb          # Complexo cristalográfico<br>
+File → Open → 6WX4.pdb          # Remova a proteína e mantenha o ligante cristalográfico<br>
 File → Open → res_out_ligand_1.pdbqt  # Pose 1 do resultado docking<br>
 <br>
 # Na janela de comando PyMol, execute:<br>
-align 6WX4, res_out_ligand_1
+rms_cur 6WX4, res_out_ligand_1, matchmaker -1
                     </div>
                     
                     <div class="media-container">
