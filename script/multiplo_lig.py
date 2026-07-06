@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# No local de execução do script será gerado o arquivo resultados_vina.csv
-# delimitado por vírgulas com as energias dos ligantes. O arquivo conf.txt, vina, vina_split e pdbqt do receptor devem estar no mesmo local de execução do script multiplo_lig.py
+# No local de execução do script será gerado o arquivo resultados_vina.csv delimitado por vírgulas com as energias dos ligantes. 
+# O arquivo conf.txt, vina, vina_split e pdbqt do receptor devem estar no mesmo local de execução do script multiplo_lig.py
 
 import os
 import subprocess
