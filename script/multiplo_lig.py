@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # No local de execução do script será gerado o arquivo resultados_vina.csv
-# delimitado por vírgulas com as energias dos ligantes
+# delimitado por vírgulas com as energias dos ligantes. O arquivo conf.txt, vina, vina_split e pdbqt do receptor devem estar no mesmo local de execução do script multiplo_lig.py
 
 import os
 import subprocess
@@ -9,12 +9,14 @@ import csv
 
 # Certifique que os nomes dos softwares vina (DETECTAR SISTEMA) estão de acordo com o que está usando. 
 # ===== DETECTAR SISTEMA =====
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 if platform.system() == "Windows":
-    VINA = "vina_1.2.7_win.exe"
-    VINA_SPLIT = "vina_split_1.2.7_win.exe"
+    VINA = os.path.join(BASE_DIR, "vina_1.2.7_win.exe")
+    VINA_SPLIT = os.path.join(BASE_DIR, "vina_split_1.2.7_win.exe")
 else:
-    VINA = "./vina_1.2.7_linux_x86_64"
-    VINA_SPLIT = "./vina_split_1.2.7_linux_x86_64"
+    VINA = os.path.join(BASE_DIR, "vina_1.2.7_linux_x86_64")
+    VINA_SPLIT = os.path.join(BASE_DIR, "vina_split_1.2.7_linux_x86_64")
 
 CONF = "conf.txt"
 RECEPTOR = "6wx4.pdbqt"
