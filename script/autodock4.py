@@ -3,6 +3,7 @@ Script para automatizar a execução do AutoDock e AutoGrid em múltiplas pastas
 O script substitui a execução do RunVS.bat, que é gerado pelo Raccoon.
 Uso: executo no prompt do Windows
 python autodock4.py
+é necessário ter o Python3 instalado e configurado no PATH do Windows.
 '''
 from pathlib import Path
 import subprocess
